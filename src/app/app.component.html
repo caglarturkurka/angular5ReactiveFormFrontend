@@ -21,11 +21,13 @@
 
     <div class="form-group row">
       <label for="birthDate" class="col-2 col-form-label">BirthDate</label> <br>
-      <p-calendar id="birthDate" utc="true" formControlName="birthDate"></p-calendar>
+      <p-calendar id="birthDate"  formControlName="birthDate" dateFormat="dd/mm/yy" utc="true"></p-calendar>
     </div>
 
     <div class="form-group row">
-      <button class="btn btn-primary" (click)="saveUser()">Submit</button>
+      <button class="btn btn-primary" (click)="saveUser()" *ngIf="isSaving">Save</button>
+      <button class="btn btn-primary" (click)="update()" *ngIf="!isSaving">Update</button>
+      <button class="btn btn-primary" (click)="cancel()" *ngIf="!isSaving">Cancel</button>
     </div>
   </form>
 
@@ -33,11 +35,26 @@
   <p-dataTable [value]="users"
                [loading]="isDataLoading"
                emptyMessage="User not found"
+               dataKey="id"
                selectionMode="single"
-               dataKey="user">
+               [(selection)]="selectedUser"
+               (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)"
+  >
     <p-column field="id" header="ID" [sortable]="true" [filter]="true"></p-column>
     <p-column field="name" header="Name" [sortable]="true" [filter]="true"></p-column>
     <p-column field="surname" header="Surname" [sortable]="true" [filter]="true"></p-column>
-    <p-column field="birthDate" header="BirthDate" [sortable]="true" ></p-column>
+    <p-column field="birthDate" header="BirthDate" [sortable]="true" >
+      <ng-template let-col let-user="rowData" pTemplate="body">
+        {{user[col.field] |date:'dd/MM/yyy'}}
+      </ng-template>
+    </p-column>
+
+    <p-column header="Action" >
+      <ng-template let-col="rowIndex" let-user="rowData" pTemplate="body">
+                <span class="fa fa-2x fa-remove"
+                      (click)="delete(user)"></span>
+      </ng-template>
+    </p-column>
+
   </p-dataTable>
 </div>
